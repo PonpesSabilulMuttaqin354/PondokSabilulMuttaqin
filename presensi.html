@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Presensi QR - Sistem 6 Sesi</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #reader { width: 320px; margin: auto; }
+  </style>
+</head>
+<body>
+  <h2>Presensi QR - 6 Sesi Harian</h2>
+  <div id="reader"></div>
+
+  <script>
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyTut8j8WcvWqOM84KbIfZTRggvtPyxPHToHLvS9XtWltmi0f_3q0juS6JPcjL28-NEDQ/exec";
+
+    function getSesiFromTime(date) {
+      const time = date.getHours() * 60 + date.getMinutes();
+      if (time >= 300 && time < 360) return "Fajar";
+      if (time >= 480 && time < 570) return "Sesi 1";
+      if (time >= 600 && time < 660) return "Sesi 2";
+      if (time >= 810 && time < 900) return "Sesi 3";
+      if (time >= 1080 && time < 1140) return "Magrib";
+      if (time >= 1170 && time < 1260) return "Sesi 4";
+      return "Di luar jadwal";
+    }
+
+    function sendToSheet({id, nama, kelas}) {
+      const now = new Date();
+      const sesi = getSesiFromTime(now);
+      const tanggal = now.toLocaleDateString("id-ID");
+      const waktu = now.toLocaleTimeString("id-ID");
+
+      fetch(WEBAPP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, nama, kelas, tanggal, waktu, sesi, status: "Hadir" })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.result === "OK") {
+          alert(`✅ Presensi ${nama} tercatat di sesi ${sesi}`);
+        } else {
+          alert("❌ Gagal presensi, coba lagi.");
+        }
+      })
+      .catch(err => alert("❌ Error koneksi: " + err));
+    }
+
+    function onScanSuccess(decodedText) {
+      const parts = decodedText.split("|");
+      if (parts.length !== 3) {
+        alert("Format QR tidak valid.");
+        return;
+      }
+      const [id, nama, kelas] = parts;
+      sendToSheet({id, nama, kelas});
+    }
+
+    new Html5Qrcode("reader").start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    ).catch(err => console.error(err));
+  </script>
+</body>
+</html>
