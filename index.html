@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Presensi QR - Sistem 6 Sesi</title>
-  <script src="https://unpkg.com/html5-qrcode@2.3.7"></script>
+  <script src="<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.7/html5-qrcode.min.js"></script>
+"></script>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     #reader { width: 320px; margin: auto; }
@@ -11,10 +12,11 @@
 </head>
 <body>
   <h2>Presensi QR - 6 Sesi Harian</h2>
-  <div id="reader"></div>
+  <div id="reader" style="width: 320px;"></div>
+
 
   <script>
-    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyTut8j8WcvWqOM84KbIfZTRggvtPyxPHToHLvS9XtWltmi0f_3q0juS6JPcjL28-NEDQ/exec";
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwS2BtpyETJXufegMJaH66dTnrHU5DkuxK3i8gpEf-ZrxJKQvETO0pYuNMRWnGGfBrKg/execss";
 
     function getSesiFromTime(date) {
       const time = date.getHours() * 60 + date.getMinutes();
